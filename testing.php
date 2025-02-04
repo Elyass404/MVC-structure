@@ -1,11 +1,10 @@
 <?php
+use App\Config\Connection;
+require __DIR__.'/vendor/autoload.php'; 
 
+$database = new Connection();
+$db = $database->getConnection();
 
-$hello= new PDO("pgsql:host=***,dbname=***","***","****");
-
-if($hello){
-    echo "you are connected succefully!";
-}
-
+var_dump($db);
 
 ?>

@@ -2,9 +2,7 @@
     "name": "hp/youdemy_platfrom",
     "autoload": {
         "psr-4": {
-            "Config\\": "App/config/",
-            "Controllers\\": "App/controllers/",
-            "Models\\": "App/models/"
+            "App\\": "App/"
         }
     },
     "authors": [
