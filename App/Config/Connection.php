@@ -5,47 +5,33 @@ namespace App\Config;
 use PDO;
 use PDOException;
 use Dotenv\Dotenv;
-require __DIR__.'/../../vendor/autoload.php'; // Composer autoloader
 
+require __DIR__.'/../../vendor/autoload.php'; // Composer autoloader
 
 // Load .env file from the root of your project
 $dotenv = Dotenv::createImmutable(__DIR__ . '/../../');
 $dotenv->load();
 
-class Connection{
+class Connection {
+    private static ?PDO $conn = null; // Static property for Singleton pattern
 
-    private $host ;
-    private $db_name ;
-    private $username;
-    private $password ;
-    private $conn;
-
-    public function __construct() {
-        // Bring values from the loaded environment variables
-        $this->host = $_ENV['DB_SERVER'];
-        $this->db_name = $_ENV['DB_NAME'];
-        $this->username = $_ENV['DB_USERNAME'];
-        $this->password = $_ENV['DB_PASSWORD'];
-        $this->conn = null;
-    }
-
-    public function getConnection() {
-        $this->conn = null;
-
-        try {
-            $this->conn = new PDO(
-                "pgsql:host={$_ENV['DB_SERVER']};dbname={$_ENV['DB_NAME']}",
-                $_ENV['DB_USERNAME'],
-                $_ENV['DB_PASSWORD']
-            );
-            $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-        } catch(PDOException $exception) {
-            echo "Connection error: " . $exception->getMessage();
+    public static function getConnection(): ?PDO {
+        if (self::$conn === null) {
+            try {
+                self::$conn = new PDO(
+                    "pgsql:host={$_ENV['DB_SERVER']};dbname={$_ENV['DB_NAME']}",
+                    $_ENV['DB_USERNAME'],
+                    $_ENV['DB_PASSWORD'],
+                    [
+                        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, // Enable error reporting
+                        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC, // Fetch results as associative arrays
+                        PDO::ATTR_EMULATE_PREPARES => false // Use real prepared statements
+                    ]
+                );
+            } catch (PDOException $exception) {
+                die("Database Connection Error: " . $exception->getMessage());
+            }
         }
-
-        return $this->conn;
+        return self::$conn;
     }
 }
-
-
-?>
