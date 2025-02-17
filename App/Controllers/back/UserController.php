@@ -17,6 +17,10 @@ class UserController {
         $users = $this->userModel->getAllUsers();
 
         // Load the view and pass users data
-        require_once __DIR__ . '/../../views/back/users.twig';
+        require_once __DIR__ . '/../../Views/back/User.php';
+    }
+
+    public function say_hello(){
+        echo "hello";
     }
 }

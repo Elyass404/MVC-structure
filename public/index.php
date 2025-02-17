@@ -1,16 +1,17 @@
 <?php
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use App\Models\User;
+use App\Config\Connection;
+use App\Core\Router;
 
-$userModel = new User();
+// Load the routes
+$router = require __DIR__ . '/../app/config/routes.php';
 
-// Fetch all users
-$users = $userModel->getAllUsers();
-echo "<pre>";
-print_r($users);
-echo "</pre>";
+// Get the requested URL
+$requestUri = $_SERVER['REQUEST_URI'];
 
-// Insert a new user (TEST)
-$userModel->createUser('John Doe', 'john@example.com');
-echo "User created successfully!";
+// Dispatch the request
+$router->dispatch($requestUri);
+
+

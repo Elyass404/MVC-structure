@@ -1,48 +1,39 @@
 <?php
 
-namespace App\core;
+namespace App\Core;
 
-use App\core\Controller;
+class Router {
+    private $routes = [];
 
-class Router extends Controller{
-    protected $routes = [];
-
-
-    private function addRoute($route, $controller, $action, $method)
-    {
-        $this->routes[$method][$route] = ['controller' => $controller, 'action' => $action];  
+    // Function to add a new route
+    public function add($path, $controller, $method) {
+        $this->routes[$path] = ['controller' => $controller, 'method' => $method];
     }
 
-    public function get($route, $controller, $action)
-    {
-        $this->addRoute($route, $controller, $action, "GET");
-    }
+    
 
-    public function post($route, $controller, $action)
-    {
-        $this->addRoute($route, $controller, $action, "POST");
-    }
+    // Function to handle the request
+    public function dispatch($requestUri) {
+        $requestUri = trim(parse_url($requestUri, PHP_URL_PATH), '/');
+        echo $requestUri;
 
-    public function dispatch()
-    {
-        $uri = strtok($_SERVER['REQUEST_URI'], '?');
-        var_dump($uri); // /article
-        $method =  $_SERVER['REQUEST_METHOD']; // GET
-        // print_r($this->routes);
-        // /article, get
-        if (array_key_exists($uri, $this->routes[$method])) {
-            $controller = $this->routes[$method][$uri]['controller'];
-            $action = $this->routes[$method][$uri]['action'];
-            // var_dump($controller);
-            // var_dump($action);
-
-            $controller = new $controller(); // $articles = new articleController;
-            // var_dump($controller);
-            $controller->$action(); // $articles->home();
-            // var_dump($action);
-        } else {
-            $this->render('404');
+        if (array_key_exists($requestUri, $this->routes)) {
+            $controllerName = "App\\Controllers\\back\\" . $this->routes[$requestUri]['controller'];
+            $method = $this->routes[$requestUri]['method'];
+            var_dump("hello");
             
+
+            if (class_exists($controllerName)) {
+                $controller = new $controllerName();
+                if (method_exists($controller, $method)) {
+                    return $controller->$method();
+                }
+            }
         }
+
+        // If no route is found, show 404
+        // http_response_code(404);
+        echo "404 - Page Not Found";
+
     }
 }
